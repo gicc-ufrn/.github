@@ -25,7 +25,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Preset do Renovate é válido
-        run: npx --yes --package renovate -- renovate-config-validator renovate.json
+        # SEM o nome do arquivo: passá-lo como argumento faz o validator tratar
+        # o conteúdo como config GLOBAL (a do próprio bot), que tem outro
+        # schema. Sem argumento ele encontra o renovate.json sozinho e valida
+        # como config de repositório, que é o que ele é.
+        run: npx --yes --package renovate -- renovate-config-validator --strict
 
       - name: Workflows são YAML válido
         run: |

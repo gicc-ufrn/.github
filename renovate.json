@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Preset compartilhado. Estendido por todos os repositórios; nenhum repete estas regras.",
-  "//": [
+  "description": [
+    "Preset compartilhado. Estendido por todos os repositórios; nenhum repete estas regras.",
     "O Renovate roda na infraestrutura da Mend e NÃO consome minutos de Actions.",
     "O que consome é a CI disparada por cada PR que ele abre. Logo, a alavanca de",
     "custo é o NÚMERO DE PRs, não a frequência com que ele verifica.",
@@ -34,8 +34,7 @@
     "automerge": true,
     "schedule": [
       "at any time"
-    ],
-    "//": "A única exceção à agenda semanal. CVE conhecida não espera segunda-feira."
+    ]
   },
   "packageRules": [
     {
