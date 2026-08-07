@@ -1,0 +1,47 @@
+# Workflow REUTILIZÁVEL. Os repositórios não copiam CI: eles chamam esta.
+#
+#   jobs:
+#     ci:
+#       uses: gicc-ufrn/.github/.github/workflows/mise-ci.yml@main
+#
+# O que `mise run ci` significa é decisão do mise.toml local — a CI não sabe a
+# linguagem do repositório. Config duplicada em sete lugares é a deriva que a
+# verificação de deriva existiria para detectar; melhor não ter as sete cópias.
+name: mise ci (reutilizável)
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        description: "Runner. macos-14 quando houver alvo Apple."
+        type: string
+        default: ubuntu-latest
+      antes:
+        description: "Comando extra antes do ci (instalar ferramenta, alvo de compilação)."
+        type: string
+        default: ""
+      tarefas:
+        description: "Tasks do mise a rodar, em ordem."
+        type: string
+        default: "ci"
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+      - name: Preparação
+        if: inputs.antes != ''
+        run: ${{ inputs.antes }}
+      - name: mise
+        run: |
+          for t in ${{ inputs.tarefas }}; do
+            echo "── mise run $t"
+            mise run "$t"
+          done
