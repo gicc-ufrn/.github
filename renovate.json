@@ -1,12 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Preset compartilhado. Estendido por todos os repositórios; nenhum repete estas regras.",
-
-  "extends": ["config:recommended"],
-  "labels": ["dependencies"],
-  "rebaseWhen": "behind-base-branch",
-
-  "//custo": [
+  "//": [
     "O Renovate roda na infraestrutura da Mend e NÃO consome minutos de Actions.",
     "O que consome é a CI disparada por cada PR que ele abre. Logo, a alavanca de",
     "custo é o NÚMERO DE PRs, não a frequência com que ele verifica.",
@@ -15,48 +10,80 @@
     "todas as atualizações de patch e minor juntas. Cinco PRs separados custariam",
     "cinco execuções de CI para o mesmo trabalho."
   ],
-  "schedule": ["* 0-6 * * 1"],
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "schedule": [
+    "* 0-6 * * 1"
+  ],
   "prConcurrentLimit": 2,
   "prHourlyLimit": 2,
-
   "platformAutomerge": true,
   "automergeType": "pr",
   "automergeStrategy": "squash",
-
   "vulnerabilityAlerts": {
     "enabled": true,
-    "labels": ["dependencies", "seguranca"],
+    "labels": [
+      "dependencies",
+      "seguranca"
+    ],
     "automerge": true,
-    "schedule": ["at any time"],
+    "schedule": [
+      "at any time"
+    ],
     "//": "A única exceção à agenda semanal. CVE conhecida não espera segunda-feira."
   },
-
   "packageRules": [
     {
       "description": "Um PR só, por semana, com tudo que é seguro. É o que mantém o custo de CI baixo.",
-      "matchUpdateTypes": ["patch", "minor", "pin", "digest"],
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "pin",
+        "digest"
+      ],
       "groupName": "dependências (patch e minor)",
       "groupSlug": "deps",
       "automerge": true
     },
     {
       "description": "Major muda o que terceiros reproduzem: um PR por vez, e espera revisão.",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "automerge": false,
-      "labels": ["dependencies", "major", "precisa-revisao"]
+      "labels": [
+        "dependencies",
+        "major",
+        "precisa-revisao"
+      ]
     },
     {
       "description": "Subir o BARG é decisão de arquitetura, não de dependência (ADR-0001).",
-      "matchSourceUrls": ["https://github.com/gicc-ufrn/barg"],
+      "matchSourceUrls": [
+        "https://github.com/gicc-ufrn/barg"
+      ],
       "automerge": false,
-      "labels": ["dependencies", "barg", "precisa-revisao"]
+      "labels": [
+        "dependencies",
+        "barg",
+        "precisa-revisao"
+      ]
     },
     {
       "description": "GitHub Actions: mensal. Muda pouco e quase nunca quebra.",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "github-actions",
       "groupSlug": "gha",
-      "schedule": ["* 0-6 1 * *"],
+      "schedule": [
+        "* 0-6 1 * *"
+      ],
       "automerge": true
     }
   ]
