@@ -1,0 +1,58 @@
+name: CI
+
+# Este repositório não tem código, mas tem o que os outros sete estendem:
+# um preset do Renovate inválido ou um workflow malformado quebra a CI de todos
+# ao mesmo tempo, e o erro aparece longe de onde foi cometido.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    name: preset e workflows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preset do Renovate é válido
+        run: npx --yes --package renovate -- renovate-config-validator renovate.json
+
+      - name: Workflows são YAML válido
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys, yaml
+          erros = 0
+          for p in sorted(pathlib.Path(".github/workflows").glob("*.yml")):
+              try:
+                  yaml.safe_load(p.read_text("utf-8"))
+                  print(f"  ✓ {p}")
+              except yaml.YAMLError as e:
+                  print(f"  ✗ {p}: {e}", file=sys.stderr); erros += 1
+          sys.exit(1 if erros else 0)
+          PY
+
+      - name: O workflow reutilizável declara os inputs que os repositórios usam
+        run: |
+          python3 - <<'PY'
+          import sys, yaml
+          wf = yaml.safe_load(open(".github/workflows/mise-ci.yml", encoding="utf-8"))
+          # 'on' vira True no YAML 1.1 — por isso a chave é buscada nos dois jeitos.
+          gatilho = wf.get("on") or wf.get(True)
+          declarados = set(gatilho["workflow_call"]["inputs"])
+          esperados = {"runner", "antes", "tarefas"}
+          faltam = esperados - declarados
+          if faltam:
+              print(f"  ✗ inputs removidos, e os repositórios chamadores quebram: {faltam}", file=sys.stderr)
+              sys.exit(1)
+          print(f"  ✓ inputs presentes: {sorted(declarados)}")
+          PY

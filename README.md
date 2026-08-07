@@ -1,5 +1,7 @@
 # `.github` — configuração compartilhada
 
+[![CI](https://github.com/gicc-ufrn/.github/actions/workflows/ci.yml/badge.svg)](https://github.com/gicc-ufrn/.github/actions/workflows/ci.yml)
+
 Repositório de configuração da organização. Não tem código de produto: tem o que
 **todos os outros repositórios estendem**, para que a mesma regra não exista em
 sete cópias que divergem.
