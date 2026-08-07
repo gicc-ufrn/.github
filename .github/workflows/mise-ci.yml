@@ -36,6 +36,16 @@ jobs:
       - uses: jdx/mise-action@v2
         with:
           experimental: true
+
+      # Cache do target/ quando o repositório é Rust. Sem isto, todo PR do
+      # Renovate recompila tudo do zero — e no runner macOS, onde o minuto conta
+      # dez vezes mais, é a maior fonte de desperdício da conta inteira.
+      - name: Cache do Rust
+        if: hashFiles('**/Cargo.lock') != ''
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target\ncore-rs -> core-rs/target"
+
       - name: Preparação
         if: inputs.antes != ''
         run: ${{ inputs.antes }}
